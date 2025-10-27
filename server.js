@@ -14,8 +14,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 app.use(
   cors({
     origin: [
-      "http://localhost:3000", // pour les tests locaux
-      "https://shai-carrelage-backend.onrender.com/", // ⚠️ remplace par ton vrai domaine Vercel
+      "http://localhost:3000", // pour le dev local
+      "https://shai-carrelage.vercel.app", // ⚠️ remplace par ton vrai domaine Vercel (frontend)
     ],
     methods: ["GET", "POST"],
     credentials: true,
@@ -23,6 +23,11 @@ app.use(
 );
 
 app.use(express.json());
+
+// 🏠 Route GET pour tester le backend
+app.get("/", (req, res) => {
+  res.send("👋 Bienvenue sur le backend Stripe de Shai Carrelage !");
+});
 
 // 🧠 Route pour créer une session Stripe Checkout
 app.post("/create-checkout-session", async (req, res) => {
@@ -45,10 +50,8 @@ app.post("/create-checkout-session", async (req, res) => {
         quantity: item.quantity,
       })),
       // ✅ URLs dynamiques selon l’environnement
-      success_url:
-        process.env.FRONTEND_URL + "/success",
-      cancel_url:
-        process.env.FRONTEND_URL + "/cancel",
+      success_url: `${process.env.FRONTEND_URL}/success`,
+      cancel_url: `${process.env.FRONTEND_URL}/cancel`,
     });
 
     res.json({ url: session.url });
