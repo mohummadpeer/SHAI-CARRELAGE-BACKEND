@@ -15,7 +15,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000", // pour les tests locaux
-      "https://ton-site.vercel.app", // ⚠️ remplace par ton vrai domaine Vercel
+      "https://shai-carrelage-backend.onrender.com/", // ⚠️ remplace par ton vrai domaine Vercel
     ],
     methods: ["GET", "POST"],
     credentials: true,
