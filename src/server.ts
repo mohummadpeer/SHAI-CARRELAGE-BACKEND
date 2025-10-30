@@ -5,6 +5,9 @@ import cors from "cors";
 import Stripe from "stripe";
 import dotenv from "dotenv";
 
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+
 import { AppDataSource } from "./data-source";
 import productRoutes from "./routes/product.routes";
 
@@ -12,10 +15,8 @@ import productRoutes from "./routes/product.routes";
 dotenv.config();
 
 
-
 const app = express();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
-
 
 
 // ✅ Configuration CORS pour autoriser ton frontend
@@ -30,6 +31,20 @@ app.use(
   })
 );
 app.use(express.json());
+
+// 🛡️ Sécurité HTTP
+app.use(helmet({
+  crossOriginResourcePolicy: false, // autorise les images cross-origin
+}));
+
+// 🚦 Limiteur de requêtes (protège contre le spam / DDoS)
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // 100 requêtes max par IP
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use(limiter);
 
 
 // ✅ Connexion à la base

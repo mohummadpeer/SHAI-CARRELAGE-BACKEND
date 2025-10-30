@@ -1,6 +1,23 @@
 import { Request, Response } from "express";
+import { body, validationResult } from "express-validator";
 import { AppDataSource } from "../data-source";
 import { Product } from "../entities/Product";
+
+// ✅ Middleware de validation
+export const validateProduct = [
+  body("name").isString().notEmpty(),
+  body("price").isNumeric(),
+  body("stock").isInt({ min: 0 }),
+  body("description").isString().notEmpty(),
+  (req: Request, res: Response, next: Function) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  },
+];
+
 
 // ➕ Ajouter un produit
 export const addProduct = async (req: Request, res: Response) => {
